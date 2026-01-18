@@ -17,6 +17,7 @@ import {
   ReadManyAuthorsDTO,
   ReadManyAuthorsQueryDTO,
 } from './dto';
+import { randomUUID } from 'crypto';
 
 @Controller('authors')
 export class AuthorsController {
@@ -35,7 +36,7 @@ export class AuthorsController {
   }
 
   @Post()
-  async create(@Body() data: CreateAuthorDTO): Promise<ReadAuthorDTO> {
+  async create(@Body() data: CreateAuthorDTO): Promise<CreateAuthorDTO> {
     const id = await this.service.create(data);
     return this.service.getOne(id);
   }
