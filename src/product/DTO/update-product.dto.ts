@@ -19,7 +19,7 @@ export class UpdateProductDto {
   @IsOptional()
   manufacturer?: string;
 
-  @IsUrl()
+  @IsString()
   @IsOptional()
   imageUrl?: string;
 

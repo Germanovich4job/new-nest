@@ -10,7 +10,7 @@ export class CreateProductDto {
   @IsString()
   manufacturer: string;
 
-  @IsUrl()
+  @IsString()
   imageUrl: string;
 
   @IsInt()
