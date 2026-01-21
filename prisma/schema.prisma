@@ -5,34 +5,49 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
-  moduleFormat    = "cjs"
-
+  provider     = "prisma-client"
+  output       = "../generated/prisma"
+  moduleFormat = "cjs"
 }
 
 datasource db {
   provider = "postgresql"
 }
 
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String?
+  password  String
+  role      Role     @default(MEMBER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+  MEMBER
+}
+
 model Author {
-  id              String @id @default(ulid()) @db.Uuid
-  name            String @db.VarChar(100)
-  country         String @db.VarChar(50)
-  description     String? @db.VarChar(1000)
-  photo           String @db.VarChar(500)
-  dateOfBirth     DateTime @map("date_of_birth") @db.Timestamptz()
-  dateOfDeath     DateTime? @map("date_of_death") @db.Timestamptz()
+  id          String    @id @default(ulid()) @db.Uuid
+  name        String    @db.VarChar(100)
+  country     String    @db.VarChar(50)
+  description String?   @db.VarChar(1000)
+  photo       String    @db.VarChar(500)
+  dateOfBirth DateTime  @map("date_of_birth") @db.Timestamptz()
+  dateOfDeath DateTime? @map("date_of_death") @db.Timestamptz()
 }
 
 model Product {
-  id         String     @id @default(cuid()) 
-  title      String     
-  category   String    
-  manufacturer String   
-  imageUrl   String     
-  price      Int        
-  quantity   Int       
+  id           String @id @default(cuid())
+  title        String
+  category     String
+  manufacturer String
+  imageUrl     String
+  price        Int
+  quantity     Int
 
-  @@map("products") 
+  @@map("products")
 }
