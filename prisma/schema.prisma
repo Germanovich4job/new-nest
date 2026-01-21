@@ -30,16 +30,6 @@ enum Role {
   MEMBER
 }
 
-model Author {
-  id          String    @id @default(ulid()) @db.Uuid
-  name        String    @db.VarChar(100)
-  country     String    @db.VarChar(50)
-  description String?   @db.VarChar(1000)
-  photo       String    @db.VarChar(500)
-  dateOfBirth DateTime  @map("date_of_birth") @db.Timestamptz()
-  dateOfDeath DateTime? @map("date_of_death") @db.Timestamptz()
-}
-
 model Product {
   id           String @id @default(uuid())
   title        String
