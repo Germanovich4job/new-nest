@@ -42,5 +42,5 @@ model Product {
   price        Int
   quantity     Int
 
-  @@map("products")y
+  @@map("products")
 }
