@@ -27,7 +27,7 @@ export class RegisterDto {
   @Length(6, 20, { message: 'Длина телефона должна быть от 6 до 20 символов' })
   phone: string;
 
-  role: Role;
+  // role: Role;
 
   @IsStrongPassword(
     {},
@@ -38,4 +38,14 @@ export class RegisterDto {
   )
   @MinLength(8, { message: 'Пароль должен содержать ровно 8 символов' })
   password: string;
+
+  @IsStrongPassword(
+    {},
+    {
+      message:
+        'Пароль должен содержать цифры, заглавные и строчные буквы, а так же специальные символы',
+    },
+  )
+  @MinLength(8, { message: 'Пароль должен содержать ровно 8 символов' })
+  resetPassword: string;
 }
