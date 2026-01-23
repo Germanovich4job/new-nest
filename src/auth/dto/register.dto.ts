@@ -1,19 +1,41 @@
 import {
   IsEmail,
-  isEmail,
-  IsNotEmpty,
-  isNotEmpty,
+  IsString,
+  IsStrongPassword,
+  Length,
   MinLength,
 } from 'class-validator';
+import { Role } from 'generated/prisma/enums';
 
 export class RegisterDto {
-  @IsEmail()
+  @IsString({ message: 'Имя должно быть строкой' })
+  @Length(2, 20, { message: 'Длина имени должна быть от 6 до 20 символов' })
+  username: string;
+
+  @IsString({ message: 'Имя должно быть строкой' })
+  @Length(2, 20, { message: 'Длина имени должна быть от 6 до 20 символов' })
+  firstName: string;
+
+  @IsString({ message: 'Имя должно быть строкой' })
+  @Length(2, 20, { message: 'Длина имени должна быть от 6 до 20 символов' })
+  lastName: string;
+
+  @IsEmail({}, { message: 'Введите email корректно' })
   email: string;
 
-  @IsNotEmpty()
-  @MinLength(6)
-  password: string;
+  @IsString({ message: 'Телефон должен быть строкой' })
+  @Length(6, 20, { message: 'Длина телефона должна быть от 6 до 20 символов' })
+  phone: string;
 
-  @IsNotEmpty()
-  name: string;
+  role: Role;
+
+  @IsStrongPassword(
+    {},
+    {
+      message:
+        'Пароль должен содержать цифры, заглавные и строчные буквы, а так же специальные символы',
+    },
+  )
+  @MinLength(8, { message: 'Пароль должен содержать ровно 8 символов' })
+  password: string;
 }

@@ -3,7 +3,6 @@
 
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider     = "prisma-client"
   output       = "../generated/prisma"
@@ -15,19 +14,23 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  name      String?
-  password  String
-  role      Role     @default(MEMBER)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String @id @default(uuid())
+  username       String   @unique @map("user_name")
+  password       String
+  firstName      String @map("first_name")
+  lastName       String @map("last_name")
+  role Role[]    @default([USER])
+  email          String
+  phone          String
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
 }
 
 enum Role {
   ADMIN
-  MANAGER
-  MEMBER
+  USER
 }
 
 model Product {
@@ -39,5 +42,5 @@ model Product {
   price        Int
   quantity     Int
 
-  @@map("products")
+  @@map("products")y
 }
