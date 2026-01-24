@@ -11,7 +11,7 @@ export class MatchPasswordsConstraint implements ValidatorConstraintInterface {
   validate(repeatPassword: string, validationArguments: ValidationArguments) {
     const { password } = validationArguments.object as CreateUserDto;
     console.log(password, repeatPassword);
-    return password !== repeatPassword;
+    return password === repeatPassword;
   }
 
   defaultMessage(): string {

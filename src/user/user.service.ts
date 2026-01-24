@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -11,37 +12,44 @@ import { genSaltSync, hashSync } from 'bcrypt';
 
 @Injectable()
 export class UserService {
+  private readonly logger = new Logger(UserService.name);
   constructor(private readonly prismaService: PrismaService) {}
   async create(createUserDto: CreateUserDto) {
+    console.log('create');
     const hashedPassword = this.hashPassword(createUserDto.password);
     const userData = { ...createUserDto, password: hashedPassword };
+
+    console.log(userData);
 
     const existingUserByUsername = await this.findByUsername(
       createUserDto.username,
     );
     if (existingUserByUsername) {
-      throw new ConflictException(
-        'Пользователь с таким никнеймом уже существует!',
-      );
+      const message = 'Пользователь с таким никнеймом уже существует!';
+      this.logger.error(message);
+      throw new ConflictException(message);
     }
 
     const existingUserByEmail = await this.findByEmail(createUserDto.email);
     if (existingUserByEmail) {
-      throw new ConflictException('Пользователь с таким email уже существует!');
+      const message = 'Пользователь с таким email уже существует!';
+      this.logger.error(message);
+      throw new ConflictException(message);
     }
 
     const existingUserByPhone = await this.findByPhone(createUserDto.phone);
     if (existingUserByPhone) {
-      throw new ConflictException(
-        'Пользователь с таким номером телефона  уже существует!',
-      );
+      const message = 'Пользователь с таким номером телефона  уже существует!';
+      this.logger.error(message);
+      throw new ConflictException(message);
     }
 
     const newUser = await this.prismaService.user
       .create({
         data: userData,
       })
-      .catch((err) => {
+      .catch((error) => {
+        this.logger.error('Ошибка при создании нового пользователя!', error);
         throw new BadRequestException(
           'Ошибка при создании нового пользователя!',
         );
@@ -74,6 +82,7 @@ export class UserService {
         return userWithoutPassword;
       })
       .catch((error) => {
+        this.logger.error('Пользователь по никнейму не найден', error);
         throw new NotFoundException('Пользователь по никнейму не найден');
       });
   }
@@ -92,6 +101,7 @@ export class UserService {
         return userWithoutPassword;
       })
       .catch((error) => {
+        this.logger.error('Пользователь по email не найден', error);
         throw new NotFoundException('Пользователь по email не найден');
       });
   }
@@ -110,6 +120,7 @@ export class UserService {
         return userWithoutPassword;
       })
       .catch((error) => {
+        this.logger.error('Пользователь по номеру телефона не найден', error);
         throw new NotFoundException(
           'Пользователь по номеру телефона не найден',
         );

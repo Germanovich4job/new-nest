@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { corsOptions } from './config/cors-options.config';
 
 const PORT = process.env.PORT ?? 3000;
@@ -17,8 +17,6 @@ async function bootstrap() {
 
   app.enableCors(corsOptions);
 
-  await app.listen(PORT, () => {
-    console.log(`started on port ${PORT}`);
-  });
+  Logger.log(`Server started on port ${PORT}`);
 }
 bootstrap();
