@@ -1,13 +1,55 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma';
+import { genSaltSync, hashSync } from 'bcrypt';
 
 @Injectable()
 export class UserService {
   constructor(private readonly prismaService: PrismaService) {}
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  async create(createUserDto: CreateUserDto) {
+    const hashedPassword = this.hashPassword(createUserDto.password);
+    const userData = { ...createUserDto, password: hashedPassword };
+
+    const existingUserByUsername = await this.findByUsername(
+      createUserDto.username,
+    );
+    if (existingUserByUsername) {
+      throw new ConflictException(
+        'Пользователь с таким никнеймом уже существует!',
+      );
+    }
+
+    const existingUserByEmail = await this.findByEmail(createUserDto.email);
+    if (existingUserByEmail) {
+      throw new ConflictException('Пользователь с таким email уже существует!');
+    }
+
+    const existingUserByPhone = await this.findByPhone(createUserDto.phone);
+    if (existingUserByPhone) {
+      throw new ConflictException(
+        'Пользователь с таким номером телефона  уже существует!',
+      );
+    }
+
+    const newUser = await this.prismaService.user
+      .create({
+        data: userData,
+      })
+      .catch((err) => {
+        throw new BadRequestException(
+          'Ошибка при создании нового пользователя!',
+        );
+      });
+
+    const { password: _1, ...withoutPassword } = newUser;
+
+    return withoutPassword;
   }
 
   findAll() {
@@ -80,5 +122,9 @@ export class UserService {
 
   remove(id: number) {
     return `This action removes a #${id} user`;
+  }
+
+  private hashPassword(password: string) {
+    return hashSync(password, genSaltSync(10));
   }
 }
