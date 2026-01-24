@@ -14,18 +14,28 @@ datasource db {
 }
 
 model User {
-  id             String @id @default(uuid())
-  username       String   @unique @map("user_name")
-  password       String
-  firstName      String @map("first_name")
-  lastName       String @map("last_name")
-  role Role[]    @default([USER])
-  email          String @unique
-  phone          String @unique
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @updatedAt @map("updated_at")
+  id        String   @id @default(uuid())
+  username  String   @unique @map("user_name")
+  password  String
+  firstName String   @map("first_name")
+  lastName  String   @map("last_name")
+  role      Role[]   @default([USER])
+  email     String   @unique
+  phone     String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  tokens    Token[]
 
   @@map("users")
+}
+
+model Token {
+  token  String   @unique
+  exp    DateTime
+  userId String
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("tokens")
 }
 
 enum Role {

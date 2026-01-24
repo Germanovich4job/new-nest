@@ -1,20 +1,36 @@
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { RegisterDto } from './dto/register.dto';
 import { UserService } from 'src/user/user.service';
 import { LoginDto } from './dto/login.dto';
 import { compareSync } from 'bcrypt';
-import { User } from 'generated/prisma/client';
+import { Token, User } from 'generated/prisma/client';
+import { JwtService } from '@nestjs/jwt';
+import { PrismaService } from 'src/prisma';
+import { v4 } from 'uuid';
+import dayjs from 'dayjs';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
-  private readonly logger = new Logger(UserService.name);
-  constructor(private readonly userService: UserService) {}
+  private readonly logger = new Logger(AuthService.name);
+  constructor(
+    private readonly userService: UserService,
+    private readonly jwtService: JwtService,
+    private readonly prismaService: PrismaService,
+    private readonly configService: ConfigService,
+  ) {}
 
   register(registerDto: RegisterDto) {
     const createUserDto = registerDto;
 
     const { repeatPassword: _, ...withoutRepeatPassword } = createUserDto;
     const createdUser = this.userService.create(withoutRepeatPassword);
+
     return createdUser;
   }
 
@@ -42,6 +58,32 @@ export class AuthService {
       throw new UnauthorizedException(textError);
     }
 
-    return user;
+    const accessToken = this.jwtService.sign({
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      role: user.role,
+    });
+
+    const refreshToken: Token = await this.getRefreshToken(user.id);
+    const tokens = { accessToken, refreshToken };
+
+    return tokens;
   }
+
+  private getRefreshToken = async (userId: string) => {
+    const currentDate = dayjs();
+
+    this.logger.error(this.configService.get('TOKEN_EXPIRATION_UNIT')!);
+
+    const expireDate = currentDate.add(1, 'month').toDate();
+
+    return this.prismaService.token.create({
+      data: {
+        token: v4(),
+        exp: expireDate,
+        userId,
+      },
+    });
+  };
 }
