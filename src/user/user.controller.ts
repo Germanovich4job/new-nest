@@ -31,18 +31,34 @@ export class UserController {
   }
 
   @Get('find-by-username/:username')
-  findByUsername(@Param('username') username: string) {
-    return this.userService.findByUsername(username);
+  async findByUsername(@Param('username') username: string) {
+    const user = await this.userService.findByUsername(username);
+
+    if (!user) return;
+
+    const { password: _, ...withoutPassword } = user;
+
+    return withoutPassword;
   }
 
   @Get('find-by-phone/:phone')
-  findByPhone(@Param('phone') phone: string) {
-    return this.userService.findByPhone(phone);
+  async findByPhone(@Param('phone') phone: string) {
+    const user = await this.userService.findByPhone(phone);
+
+    if (!user) return;
+    const { password: _, ...withoutPassword } = user;
+
+    return withoutPassword;
   }
 
   @Get('find-by-email/:email')
-  findByEmail(@Param('email') email: string) {
-    return this.userService.findByEmail(email);
+  async findByEmail(@Param('email') email: string) {
+    const user = await this.userService.findByEmail(email);
+
+    if (!user) return;
+    const { password: _, ...withoutPassword } = user;
+
+    return withoutPassword;
   }
 
   @Patch(':id')

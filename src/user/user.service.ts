@@ -78,8 +78,7 @@ export class UserService {
           return null;
         }
 
-        const { password: _3, ...userWithoutPassword } = foundedUser;
-        return userWithoutPassword;
+        return foundedUser;
       })
       .catch((error) => {
         this.logger.error('Пользователь по никнейму не найден', error);
@@ -97,8 +96,7 @@ export class UserService {
           return null;
         }
 
-        const { password: _3, ...userWithoutPassword } = foundedUser;
-        return userWithoutPassword;
+        return foundedUser;
       })
       .catch((error) => {
         this.logger.error('Пользователь по email не найден', error);
@@ -116,8 +114,7 @@ export class UserService {
           return null;
         }
 
-        const { password: _3, ...userWithoutPassword } = foundedUser;
-        return userWithoutPassword;
+        return foundedUser;
       })
       .catch((error) => {
         this.logger.error('Пользователь по номеру телефона не найден', error);
