@@ -17,8 +17,6 @@ async function bootstrap() {
 
   app.enableCors(corsOptions);
 
-  // app.setGlobalPrefix('api');
-
   await app.listen(PORT, () => {
     console.log(`started on port ${PORT}`);
   });

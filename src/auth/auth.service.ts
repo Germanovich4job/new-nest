@@ -12,7 +12,7 @@ export class AuthService {
   async register(registerDto: RegisterDto) {
     const hashedPassword = this.hashPassword(registerDto.password);
     const userData = { ...registerDto, password: hashedPassword };
-    const { resetPassword: _, ...withoutRepeatPasswordData } = userData;
+    const { repeatPassword: _, ...withoutRepeatPasswordData } = userData;
 
     const newUser = await this.prismaService.user
       .create({
