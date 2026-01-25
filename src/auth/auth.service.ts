@@ -81,7 +81,7 @@ export class AuthService {
     return this.prismaService.token.create({
       data: {
         token: v4(),
-        exp: expireDate,
+        expires: expireDate,
         userId,
       },
     });

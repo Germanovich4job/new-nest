@@ -9,6 +9,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma';
 import { genSaltSync, hashSync } from 'bcrypt';
+import { patch } from 'axios';
 
 @Injectable()
 export class UserService {
@@ -61,7 +62,7 @@ export class UserService {
   }
 
   findAll() {
-    return `This action returns all user`;
+    return this.prismaService.user.findMany();
   }
 
   findById(id: string) {
@@ -138,8 +139,11 @@ export class UserService {
       });
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  update(id: string, updateUserDto: UpdateUserDto) {
+    return this.prismaService.user.update({
+      data: updateUserDto,
+      where: { id },
+    });
   }
 
   remove(id: number) {

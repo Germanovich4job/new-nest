@@ -3,14 +3,20 @@ import {
   Body,
   ConflictException,
   Controller,
+  HttpStatus,
   Logger,
   Post,
+  Res,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { UserService } from 'src/user/user.service';
 import { Public } from './guards/jwt-auth.guard';
+import { Token } from 'generated/prisma/browser';
+import dayjs from 'dayjs';
+import type { Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -32,7 +38,7 @@ export class AuthController {
 
   // @Public()
   @Post('login')
-  async login(@Body() loginDto: LoginDto) {
+  async login(@Body() loginDto: LoginDto, @Res() res: Response) {
     const tokens = await this.authService.login(loginDto);
 
     if (!tokens) {
@@ -40,6 +46,31 @@ export class AuthController {
       this.logger.error(textError);
     }
 
-    return tokens;
+    const { refreshToken, accessToken } = tokens;
+    this.setRefreshTokenToCookies(refreshToken, res);
+
+    res.status(HttpStatus.CREATED).json({ accessToken });
+  }
+
+  private setRefreshTokenToCookies(refreshToken: Token, res: Response) {
+    if (!refreshToken) {
+      throw new UnauthorizedException();
+    }
+
+    const { token, expires } = refreshToken;
+    const cookieName = 'refreshToken';
+    const cookieExpTime = dayjs(expires).toDate();
+
+    const cookieValue = token;
+
+    const cookieOptions = {
+      httpOnly: true,
+      sameSite: 'lax' as 'lax' | 'strict' | 'none',
+      secure: false,
+      path: '/',
+      expires: cookieExpTime,
+    };
+
+    res.cookie(cookieName, cookieValue, cookieOptions);
   }
 }
