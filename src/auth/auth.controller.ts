@@ -3,6 +3,7 @@ import {
   Body,
   ConflictException,
   Controller,
+  Get,
   HttpStatus,
   Logger,
   Post,
@@ -17,6 +18,11 @@ import { Public } from './guards/jwt-auth.guard';
 import { Token } from 'generated/prisma/browser';
 import dayjs from 'dayjs';
 import type { Response } from 'express';
+import { Cookies } from 'src/decorators/cookies.decorator';
+import { access } from 'fs';
+import { ITokens } from './interfaces/interfaces';
+
+const REFRESH_TOKEN = 'refreshToken';
 
 @Controller('auth')
 export class AuthController {
@@ -46,19 +52,33 @@ export class AuthController {
       this.logger.error(textError);
     }
 
-    const { refreshToken, accessToken } = tokens;
-    this.setRefreshTokenToCookies(refreshToken, res);
-
-    res.status(HttpStatus.CREATED).json({ accessToken });
+    this.setRefreshTokenToCookies(tokens, res);
   }
 
-  private setRefreshTokenToCookies(refreshToken: Token, res: Response) {
+  @Get('refresh-tokens')
+  async refreshTokens(
+    @Cookies(REFRESH_TOKEN) refreshToken: string,
+    @Res() res: Response,
+  ) {
     if (!refreshToken) {
       throw new UnauthorizedException();
     }
+    const tokens = await this.authService.refreshTokens(refreshToken);
 
-    const { token, expires } = refreshToken;
-    const cookieName = 'refreshToken';
+    if (!tokens) {
+      throw new UnauthorizedException();
+    }
+
+    this.setRefreshTokenToCookies(tokens, res);
+  }
+
+  private setRefreshTokenToCookies(tokens: ITokens, res: Response) {
+    if (!tokens) {
+      throw new UnauthorizedException();
+    }
+
+    const { token, expires } = tokens.refreshToken;
+
     const cookieExpTime = dayjs(expires).toDate();
 
     const cookieValue = token;
@@ -71,6 +91,7 @@ export class AuthController {
       expires: cookieExpTime,
     };
 
-    res.cookie(cookieName, cookieValue, cookieOptions);
+    res.cookie(REFRESH_TOKEN, cookieValue, cookieOptions);
+    res.status(HttpStatus.CREATED).json({ accessToken: tokens.accessToken });
   }
 }

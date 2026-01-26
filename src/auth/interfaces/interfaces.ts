@@ -1,4 +1,4 @@
-import { Role, User } from 'generated/prisma/client';
+import { Role, Token, User } from 'generated/prisma/client';
 export interface IAccessToken {
   id: string;
   username: string;
@@ -7,3 +7,8 @@ export interface IAccessToken {
 }
 
 export type JWTPayload = IAccessToken;
+
+export interface ITokens {
+  accessToken: string;
+  refreshToken: Token;
+}

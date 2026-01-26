@@ -58,6 +58,33 @@ export class AuthService {
       throw new UnauthorizedException(textError);
     }
 
+    return this.generateTokens(user);
+  }
+
+  async refreshTokens(refreshToken: string) {
+    const token = await this.prismaService.token
+      .delete({
+        where: { token: refreshToken },
+      })
+      .catch(() => null);
+    const today = dayjs();
+
+    if (!token) return;
+    const exDate = dayjs(token.expires);
+    const isExpired = exDate.isBefore(today);
+
+    if (!token || isExpired) {
+      throw new UnauthorizedException();
+    }
+
+    const user = await this.userService.findById(token.userId);
+    if (!user) {
+      return;
+    }
+    return this.generateTokens(user);
+  }
+
+  private generateTokens = async (user: User) => {
     const accessToken = this.jwtService.sign({
       id: user.id,
       username: user.username,
@@ -69,7 +96,7 @@ export class AuthService {
     const tokens = { accessToken, refreshToken };
 
     return tokens;
-  }
+  };
 
   private getRefreshToken = async (userId: string) => {
     const currentDate = dayjs();

@@ -4,7 +4,7 @@ import {
   MinLength,
   Validate,
 } from 'class-validator';
-import { MatchPasswordsConstraint } from 'src/decorators/match-passwords-constraint';
+import { MatchPasswordsConstraint } from 'src/validators/match-passwords-constraint';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 
 export class RegisterDto extends CreateUserDto {
