@@ -42,7 +42,7 @@ export class AuthController {
     return createdUser;
   }
 
-  // @Public()
+  @Public()
   @Post('login')
   async login(@Body() loginDto: LoginDto, @Res() res: Response) {
     const tokens = await this.authService.login(loginDto);
