@@ -13,6 +13,10 @@ export class UpdateProductDto {
 
   @IsString()
   @IsOptional()
+  description?: string;
+
+  @IsString()
+  @IsOptional()
   category?: string;
 
   @IsString()

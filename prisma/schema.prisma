@@ -46,6 +46,7 @@ enum Role {
 model Product {
   id           String @id @default(uuid())
   title        String
+  description  String @default("Описание товара по дефолту")
   category     String
   manufacturer String
   imageUrl     String
