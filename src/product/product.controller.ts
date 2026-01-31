@@ -6,6 +6,7 @@ import {
   Delete,
   Param,
   Body,
+  Patch,
 } from '@nestjs/common';
 
 import { ProductService } from './product.service';
@@ -32,7 +33,7 @@ export class ProductController {
     return await this.service.create(dto);
   }
 
-  @Put(':id')
+  @Patch(':id')
   async update(
     @Param('id') id: string,
     @Body() dto: UpdateProductDto,
