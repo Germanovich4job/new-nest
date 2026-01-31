@@ -22,8 +22,12 @@ export class ProductService implements IProductService {
     return await this.prisma.product.findMany();
   }
 
-  async update(id: string, dto: UpdateProductDto): Promise<void> {
-    await this.prisma.product.update({ where: { id }, data: dto });
+  async update(id: string, dto: UpdateProductDto): Promise<UpdateProductDto> {
+    const updatedProduct = await this.prisma.product.update({
+      where: { id },
+      data: dto,
+    });
+    return updatedProduct;
   }
 
   async delete(id: string): Promise<void> {

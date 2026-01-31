@@ -5,6 +5,6 @@ export interface IProductService {
   create(dto: CreateProductDto): Promise<string>;
   readOne(id: string): Promise<object>;
   readMany(): Promise<object[]>;
-  update(id: string, dto: UpdateProductDto): Promise<void>;
+  update(id: string, dto: UpdateProductDto): Promise<UpdateProductDto>;
   delete(id: string): Promise<void>;
 }

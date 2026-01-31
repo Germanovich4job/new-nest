@@ -37,6 +37,6 @@ export class UpdateProductDto {
   @IsOptional()
   quantity?: number;
 
-  @IsString()
+  // @IsString()
   id: string;
 }

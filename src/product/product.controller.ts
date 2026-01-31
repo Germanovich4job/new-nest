@@ -37,8 +37,8 @@ export class ProductController {
   async update(
     @Param('id') id: string,
     @Body() dto: UpdateProductDto,
-  ): Promise<void> {
-    await this.service.update(id, dto);
+  ): Promise<UpdateProductDto> {
+    return await this.service.update(id, dto);
   }
 
   @Delete(':id')
