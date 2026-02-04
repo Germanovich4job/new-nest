@@ -22,6 +22,9 @@ model User {
   role      Role[]   @default([USER])
   email     String   @unique
   phone     String   @unique
+  age       Int      @default(0)
+  address   String   @default("address")
+  avatar    String   @default("no image")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
   tokens    Token[]

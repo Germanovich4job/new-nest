@@ -37,4 +37,7 @@ export class CreateUserDto {
   )
   @MinLength(8, { message: 'Пароль должен содержать ровно 8 символов' })
   password: string;
+
+  @IsString({ message: 'Вы должны загрузить изображение' })
+  avatar: string;
 }

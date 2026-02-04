@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Request,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -69,5 +70,15 @@ export class UserController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.userService.remove(+id);
+  }
+
+  @Get('/me')
+  async getProfile(@Request() req) {
+    const userId = req.user.id;
+    const user = await this.userService.findById(userId);
+    if (!user) return null;
+
+    const { password: _, ...withoutPassword } = user;
+    return withoutPassword;
   }
 }
